@@ -12,7 +12,7 @@ describe 'Gitlab Cookbook' do
   end
   
   it 'it has a self-signed SSL certificate' do
-    expect((command 'echo | openssl s_client -connect localhost:443').stdout).to match /CN=gitlab\.devopsexchange/
+    expect((command 'echo | openssl s_client -connect localhost:443').stdout).to match /CN=gitlab\.mycompany/
   end
 
   it 'serves the Gitlab web interface' do
@@ -24,7 +24,7 @@ describe 'Gitlab Cookbook' do
 
     require 'net/https'
     require 'uri'
-    uri = URI.parse('https://localhost/')
+    uri = URI.parse('https://localhost/users/sign_in')
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
@@ -32,12 +32,8 @@ describe 'Gitlab Cookbook' do
     request = Net::HTTP::Get.new(uri.request_uri)
     request.basic_auth("root", "5iveL!fe")
     response = http.request(request)
-    expect(response.body).to match /wobble/
+    expect(response.body).to match /Manage git repositories/
 
   end
   
-  it 'redirects HTTP traffic to HTTPS' do
-    expect((command 'curl -k --head http://localhost').stdout).to match /Location: https/
-  end
-
 end
